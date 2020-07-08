@@ -6,6 +6,7 @@ const morgan = require('morgan');
 
 const { stock, customers } = require('./data/promo');
 const { validateData } = require('./data/handlers');
+let customerName, product, province;
 
 express()
   .use(function (req, res, next) {
@@ -27,13 +28,21 @@ express()
     // console.log(req.body)
     const msg = validateData(req.body);
     if (msg === 'success') {
-      res.json({status: msg})
+      res.json({status: msg}),
+      customerName = req.body.givenName;
+      product = req.body.order;
+      province = req.body.province;
     } else {
       res.json({status: 'error', error: msg})
     }
   })
+
   .get('/order-confirmed', (req, res) => {
-    console.log(req.body)
+    res.render('index', {
+      name: customerName,
+      product: product,
+      province: province
+    })
   })
 
   .get('*', (req, res) => res.send('Dang. 404.'))
